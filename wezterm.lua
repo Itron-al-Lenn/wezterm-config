@@ -31,7 +31,7 @@ config.max_fps = 144
 config.animation_fps = 60
 config.cursor_blink_rate = 250
 config.window_padding = {
-  top = 11,
+  top = 20,
   bottom = 0,
   left = 5,
   right = 0,
@@ -40,7 +40,7 @@ config.window_padding = {
 -- Background configuration
 config.background = {
   {
-    source = { File = wezterm.config_dir .. '/wallpapers/haunted-house.jpg' },
+    source = { File = wezterm.config_dir .. '/wallpapers/example.png' },
     horizontal_align = 'Center',
     opacity = 1,
   },
