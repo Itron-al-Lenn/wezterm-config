@@ -2,9 +2,9 @@
 local wezterm = require 'wezterm'
 local config = wezterm.config_builder()
 local act = wezterm.action
-local sb = require 'status_bar'
+local sb = require 'util.status_bar'
 local theme = 'Mocha'
-local c = require('colours')[theme]
+local c = require('util.colours')[theme]
 
 -- Set default font with fallback
 config.font = wezterm.font_with_fallback {
@@ -40,7 +40,7 @@ config.window_padding = {
 -- Background configuration
 config.background = {
   {
-    source = { File = wezterm.config_dir .. '/wallpapers/example.png' },
+    source = { File = wezterm.config_dir .. '/wallpapers/jellyfish.jpg' },
     horizontal_align = 'Center',
     opacity = 1,
   },

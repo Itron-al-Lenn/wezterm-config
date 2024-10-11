@@ -1,4 +1,4 @@
-function is_current(hour, minute, lecture)
+local function is_current(hour, minute, lecture)
   local after_start = (hour >= lecture.start[1] and not (hour == lecture.start[1] and minute < lecture.start[2]))
   local before_fin = (hour <= lecture.fin[1] and not (hour == lecture.fin[1] and minute >= lecture.fin[2]))
   return after_start and before_fin
@@ -26,7 +26,7 @@ schedule = {
   Thu = {
     { start = { 9, 45 }, fin = { 11, 30 }, name = 'Physik 3', vu = 'U', location = 'HCI F2' },
     { start = { 11, 45 }, fin = { 13, 30 }, name = 'Physik 3', vu = 'V', location = 'HPH G2' },
-    { start = { 13, 45 }, fin = { 15, 30 }, name = 'Alg. Mech.', vu = 'V', location = 'HIT J53' },
+    { start = { 13, 45 }, fin = { 15, 30 }, name = 'Alg. Mech.', vu = 'U', location = 'HIT J53' },
   },
   Fri = {
     { start = { 9, 45 }, fin = { 11, 30 }, name = 'PC 2', vu = 'V', location = 'HCI G3' },

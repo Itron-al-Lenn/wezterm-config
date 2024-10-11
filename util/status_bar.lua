@@ -1,6 +1,6 @@
 local wezterm = require 'wezterm'
-local schedule = require 'schedule'
-local c = require 'colours'
+local schedule = require 'util.schedule'
+local c = require 'util.colours'
 
 local M = {}
 
