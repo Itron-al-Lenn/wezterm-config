@@ -51,6 +51,11 @@ M.events = function()
     if wezterm.GLOBAL.zen_mode then
       return
     end
+    local num_wallpapers = #wezterm.read_dir(wezterm.config_dir .. '/wallpapers')
+    if num_wallpapers == 1 then
+      wezterm.log_error "Can't delete the last wallpaper"
+      return
+    end
     if os.remove(wezterm.GLOBAL.wallpaper) then
       wezterm.log_error 'Deleting wallpaper failed'
     end
