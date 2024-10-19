@@ -1,17 +1,15 @@
 -- Import necessary WezTerm and external modules
-local wezterm = require 'wezterm'
+local wezterm = require 'wezterm' --[[@as Wezterm]]
 local config = wezterm.config_builder()
 local act = wezterm.action
 local sb = require 'util.status_bar'
 local theme = 'Mocha'
-local c = require('util.colours')[theme]
+local background = require 'util.wallpaper'
+local colours = require('util.colours')[theme]
 
 -- Set default font with fallback
 config.font = wezterm.font_with_fallback {
-  {
-    family = 'mononoki',
-    weight = 'Regular',
-  },
+  'mononoki',
   'Symbols Nerd Font Regular',
 }
 
@@ -19,13 +17,15 @@ config.font = wezterm.font_with_fallback {
 config.wsl_domains = {
   {
     name = 'WSL:Ubuntu',
+    default_cwd = '~',
+    username = 'vivien',
     distribution = 'Ubuntu',
     default_prog = { 'zsh' },
   },
 }
 
 -- Window customization
-config.window_decorations = 'INTEGRATED_BUTTONS|RESIZE'
+config.window_decorations = 'RESIZE|INTEGRATED_BUTTONS'
 config.window_close_confirmation = 'NeverPrompt'
 config.max_fps = 144
 config.animation_fps = 60
@@ -39,17 +39,13 @@ config.window_padding = {
 
 -- Background configuration
 config.background = {
-  {
-    source = { File = wezterm.config_dir .. '/wallpapers/jellyfish.jpg' },
-    horizontal_align = 'Center',
-    opacity = 1,
-  },
+  background.get_wallpaper(theme),
   {
     source = {
       Gradient = {
         colors = {
-          c['base'],
-          -- 'rgba(24, 24, 37, 0.75)',
+          colours['base'],
+          'rgba(24, 24, 37, 0.5)',
           'rgba(24, 24, 37, 0.2)',
           'rgba(17, 17, 27, 0.0)',
         },
@@ -62,10 +58,8 @@ config.background = {
     source = {
       Gradient = {
         colors = {
-          c['mantle'],
-          c['mantle'],
-          'rgba(17, 17, 27, 0.0)',
-          'rgba(17, 17, 27, 0.0)',
+          colours['base'],
+          'rgba(17, 17, 27, 0.5)',
           'rgba(17, 17, 27, 0.0)',
           'rgba(17, 17, 27, 0.0)',
         },
@@ -77,33 +71,35 @@ config.background = {
   },
 }
 
+-- Reload the configuration every thirty minute
+wezterm.time.call_after(1800, function()
+  wezterm.reload_configuration()
+end)
+
 -- Color scheme for tabs and other UI elements
 config.colors = {
   tab_bar = {
-    background = c['mantle'], -- Background for the tab bar
+    background = 'rgba(0, 0, 0, 0)', -- Background for the tab bar
     active_tab = {
-      bg_color = c['surface0'],
-      fg_color = c['text'],
+      bg_color = 'rgba(0, 0, 0, 0)',
+      fg_color = colours['text'],
       intensity = 'Bold',
-      underline = 'None',
-      italic = false,
-      strikethrough = false,
     },
     inactive_tab = {
-      bg_color = c['mantle'],
-      fg_color = c['subtext0'],
+      bg_color = 'rgba(0, 0, 0, 0)',
+      fg_color = colours['subtext0'],
     },
     inactive_tab_hover = {
-      bg_color = c['base'],
-      fg_color = c['subtext1'],
+      bg_color = 'rgba(0, 0, 0, 0)',
+      fg_color = colours['subtext1'],
     },
     new_tab = {
-      bg_color = c['mantle'],
-      fg_color = c['subtext0'],
+      bg_color = 'rgba(0, 0, 0, 0)',
+      fg_color = colours['subtext0'],
     },
     new_tab_hover = {
-      bg_color = c['base'],
-      fg_color = c['subtext1'],
+      bg_color = 'rgba(0, 0, 0, 0)',
+      fg_color = colours['subtext1'],
     },
   },
 }
@@ -129,6 +125,9 @@ config.tab_bar_style = {
   window_hide = '  󰖰  ',
   window_hide_hover = '  󰖰  ',
 }
+
+-- Events
+background.events()
 
 -- Keybindings
 config.leader = { key = 'a', mods = 'CTRL', timeout_milliseconds = 1000 }
@@ -167,6 +166,8 @@ config.keys = {
     },
   },
   { key = 'm', mods = 'LEADER', action = act.ActivateKeyTable { name = 'move_tab', one_shot = false } },
+  { key = 'Keypad7', mods = 'LEADER', action = act.EmitEvent 'Toggle-Zen-Mode' },
+  { key = 'Keypad8', mods = 'LEADER', action = act.EmitEvent 'Remove-Wallpaper' },
 }
 
 for i = 1, 9 do

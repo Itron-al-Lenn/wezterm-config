@@ -1,4 +1,4 @@
-local wezterm = require 'wezterm'
+local wezterm = require 'wezterm' --[[@as Wezterm]]
 local schedule = require 'util.schedule'
 local c = require 'util.colours'
 
