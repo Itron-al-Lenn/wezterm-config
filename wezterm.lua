@@ -59,9 +59,11 @@ config.background = {
       Gradient = {
         colors = {
           colours['base'],
-          'rgba(17, 17, 27, 0.5)',
-          'rgba(17, 17, 27, 0.0)',
-          'rgba(17, 17, 27, 0.0)',
+          'rgba(30, 30, 46, 0.5)',
+          'rgba(30, 30, 46, 0.0)',
+          'rgba(30, 30, 46, 0.0)',
+          'rgba(30, 30, 46, 0.5)',
+          colours['base'],
         },
         orientation = { Linear = { angle = 270 } },
       },
