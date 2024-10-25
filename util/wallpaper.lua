@@ -59,6 +59,7 @@ M.events = function()
     if os.remove(wezterm.GLOBAL.wallpaper) then
       wezterm.log_error 'Deleting wallpaper failed'
     end
+    wezterm.log_info(string.format('Sucessfully deleted wallpaper. %d wallpaper remaining', num_wallpapers - 1))
     wezterm.GLOBAL.last_seed = 0
     wezterm.reload_configuration()
   end)
