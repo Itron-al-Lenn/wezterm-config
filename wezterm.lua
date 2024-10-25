@@ -20,7 +20,7 @@ config.wsl_domains = {
     default_cwd = '~',
     username = 'vivien',
     distribution = 'Ubuntu',
-    default_prog = { 'zsh' },
+    default_prog = { 'fish' },
   },
 }
 
