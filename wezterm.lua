@@ -3,9 +3,10 @@ local wezterm = require 'wezterm' --[[@as Wezterm]]
 local config = wezterm.config_builder()
 local act = wezterm.action
 local sb = require 'util.status_bar'
-local theme = 'Mocha'
+local theme = 'Gruvbox-Mat'
 local background = require 'util.wallpaper'
-local colours = require('util.colours')[theme]
+local c_util = require 'util.colours'
+local colours = c_util[theme]
 
 -- Set default font with fallback
 config.font = wezterm.font_with_fallback {
@@ -45,9 +46,9 @@ config.background = {
       Gradient = {
         colors = {
           colours['base'],
-          'rgba(24, 24, 37, 0.5)',
-          'rgba(24, 24, 37, 0.2)',
-          'rgba(17, 17, 27, 0.0)',
+          c_util.hex_to_rgba(colours['mantle'], 0.2),
+          c_util.hex_to_rgba(colours['mantle'], 0.2),
+          c_util.hex_to_rgba(colours['crust'], 0.0),
         },
       },
     },
@@ -59,10 +60,10 @@ config.background = {
       Gradient = {
         colors = {
           colours['base'],
-          'rgba(30, 30, 46, 0.5)',
-          'rgba(30, 30, 46, 0.0)',
-          'rgba(30, 30, 46, 0.0)',
-          'rgba(30, 30, 46, 0.5)',
+          c_util.hex_to_rgba(colours['base'], 0.5),
+          c_util.hex_to_rgba(colours['base'], 0.0),
+          c_util.hex_to_rgba(colours['base'], 0.0),
+          c_util.hex_to_rgba(colours['base'], 0.5),
           colours['base'],
         },
         orientation = { Linear = { angle = 270 } },

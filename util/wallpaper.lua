@@ -8,7 +8,15 @@ local function calc_seed()
   return seed
 end
 
----Returns a table configuring the last pane of the background
+local function get_file_sep()
+  local sep = '/'
+  if wezterm.target_triple:find 'windows' ~= nil then
+    sep = '\\'
+  end
+  return sep
+end
+
+---Returns a table configuring the last pane of the background.
 ---@param theme string Theme used
 ---@return table
 M.get_wallpaper = function(theme)
@@ -23,8 +31,16 @@ M.get_wallpaper = function(theme)
   else
     local seed = calc_seed()
     if wezterm.GLOBAL.last_seed ~= seed or not wezterm.GLOBAL.wallpaper then
-      local wallpapers = wezterm.read_dir(wezterm.config_dir .. '/wallpapers')
+      local sep = get_file_sep()
+      local wallpaper_path = wezterm.config_dir .. sep .. 'wallpapers' .. sep
+      local wallpapers
+      if pcall(wezterm.read_dir, wallpaper_path .. theme) then
+        wallpapers = wezterm.read_dir(wallpaper_path .. theme)
+      else
+        wallpapers = wezterm.read_dir(wallpaper_path)
+      end
       math.randomseed(seed)
+      ---@type string
       wezterm.GLOBAL.wallpaper = wallpapers[math.random(#wallpapers)]
       wezterm.GLOBAL.last_seed = seed
     end
@@ -51,7 +67,10 @@ M.events = function()
     if wezterm.GLOBAL.zen_mode then
       return
     end
-    local num_wallpapers = #wezterm.read_dir(wezterm.config_dir .. '/wallpapers')
+    local sep = get_file_sep()
+    local num_wallpapers = #wezterm.read_dir(wezterm.GLOBAL.wallpaper:match([[(.*]] .. sep .. [[)]]))
+    wezterm.log_info(wezterm.GLOBAL.wallpaper:match([[(.*]] .. sep .. [[)]]))
+    wezterm.log_info(tostring(num_wallpapers))
     if num_wallpapers == 1 then
       wezterm.log_error "Can't delete the last wallpaper"
       return

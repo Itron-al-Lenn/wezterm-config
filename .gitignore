@@ -1,2 +1,4 @@
-wallpapers/*
-!wallpapers/example.png
+wallpapers/Mocha/*
+wallpapers/Gruvbox-Mat/*
+!wallpapers/Mocha/example.png
+!wallpapers/Gruvbox-Mat/example.png
