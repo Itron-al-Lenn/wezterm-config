@@ -97,9 +97,6 @@ config.tab_bar_style = {
   window_hide_hover = '  󰖰  ',
 }
 
--- Events
-background.events()
-
 -- Keybindings
 config.leader = { key = 'a', mods = 'CTRL', timeout_milliseconds = 1000 }
 config.keys = {
@@ -137,8 +134,8 @@ config.keys = {
     },
   },
   { key = 'm', mods = 'LEADER', action = act.ActivateKeyTable { name = 'move_tab', one_shot = false } },
-  { key = 'Keypad7', mods = 'LEADER', action = act.EmitEvent 'Toggle-Zen-Mode' },
-  { key = 'Keypad8', mods = 'LEADER', action = act.EmitEvent 'Remove-Wallpaper' },
+  { key = 'Keypad7', mods = 'LEADER', action = background.action.zen_mode() },
+  { key = 'Keypad8', mods = 'LEADER', action = background.action.remove_wallpaper() },
 }
 
 for i = 1, 9 do

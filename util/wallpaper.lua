@@ -94,17 +94,21 @@ M.get_wallpaper = function(theme)
   return background
 end
 
----Events handling the background behaviour
-M.events = function()
-  -- Toggle the Zen Mode variable and reloads the config
-  wezterm.on('Toggle-Zen-Mode', function()
+-- Add actions to control our background
+M.action = {}
+
+-- Toggle the Zen Mode variable and reloads the config
+M.action.zen_mode = function()
+  return wezterm.action_callback(function()
     wezterm.GLOBAL.zen_mode = not wezterm.GLOBAL.zen_mode
     wezterm.log_info(wezterm.GLOBAL.zen_mode)
     wezterm.reload_configuration()
   end)
+end
 
-  -- Remove the current background image
-  wezterm.on('Remove-Wallpaper', function()
+-- Remove the current background image
+M.action.remove_wallpaper = function()
+  return wezterm.action_callback(function()
     if wezterm.GLOBAL.zen_mode then
       return
     end
