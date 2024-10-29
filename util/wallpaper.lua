@@ -1,7 +1,44 @@
 local wezterm = require 'wezterm' --[[@as Wezterm]]
-local colours = require 'util.colours'
+local c_util = require 'util.colours'
 
 M = {}
+
+local function gradients(theme)
+  local colours = c_util[theme]
+  return {
+    {
+      source = {
+        Gradient = {
+          colors = {
+            colours['base'],
+            c_util.hex_to_rgba(colours['mantle'], 0.2),
+            c_util.hex_to_rgba(colours['mantle'], 0.2),
+            c_util.hex_to_rgba(colours['crust'], 0.0),
+          },
+        },
+      },
+      width = '100%',
+      height = '100%',
+    },
+    {
+      source = {
+        Gradient = {
+          colors = {
+            colours['base'],
+            c_util.hex_to_rgba(colours['base'], 0.5),
+            c_util.hex_to_rgba(colours['base'], 0.0),
+            c_util.hex_to_rgba(colours['base'], 0.0),
+            c_util.hex_to_rgba(colours['base'], 0.5),
+            colours['base'],
+          },
+          orientation = { Linear = { angle = 270 } },
+        },
+      },
+      width = '100%',
+      height = '100%',
+    },
+  }
+end
 
 local function calc_seed()
   local seed = tonumber(wezterm.strftime '%y%m%d')
@@ -23,11 +60,12 @@ M.get_wallpaper = function(theme)
   theme = theme or 'Mocha'
   local background = {}
   if wezterm.GLOBAL.zen_mode then
-    background = {
-      source = { Color = colours[theme]['base'] },
+    local solid_background = {
+      source = { Color = c_util[theme]['base'] },
       width = '100%',
       height = '100%',
     }
+    table.insert(background, solid_background)
   else
     local seed = calc_seed()
     if wezterm.GLOBAL.last_seed ~= seed or not wezterm.GLOBAL.wallpaper then
@@ -44,11 +82,14 @@ M.get_wallpaper = function(theme)
       wezterm.GLOBAL.wallpaper = wallpapers[math.random(#wallpapers)]
       wezterm.GLOBAL.last_seed = seed
     end
-    background = {
+    local background_image = {
       source = { File = wezterm.GLOBAL.wallpaper },
       horizontal_align = 'Center',
       opacity = 1,
     }
+    table.insert(background, background_image)
+    local gradient = gradients(theme)
+    table.move(gradient, 1, #gradient, 2, background)
   end
   return background
 end

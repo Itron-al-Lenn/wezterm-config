@@ -1,12 +1,14 @@
+---@diagnostic disable: missing-fields, assign-type-mismatch
 -- Import necessary WezTerm and external modules
 local wezterm = require 'wezterm' --[[@as Wezterm]]
 local config = wezterm.config_builder()
 local act = wezterm.action
 local sb = require 'util.status_bar'
-local theme = 'Gruvbox-Mat'
 local background = require 'util.wallpaper'
 local c_util = require 'util.colours'
-local colours = c_util[theme]
+local colours = c_util.current_colours
+-- Out current theme is defined is colours.lua, such that other programs too can read colours.lua and use the colours from there
+local theme = c_util.theme
 
 -- Set default font with fallback
 config.font = wezterm.font_with_fallback {
@@ -19,7 +21,6 @@ config.wsl_domains = {
   {
     name = 'WSL:Ubuntu',
     default_cwd = '~',
-    username = 'vivien',
     distribution = 'Ubuntu',
     default_prog = { 'fish' },
   },
@@ -39,40 +40,7 @@ config.window_padding = {
 }
 
 -- Background configuration
-config.background = {
-  background.get_wallpaper(theme),
-  {
-    source = {
-      Gradient = {
-        colors = {
-          colours['base'],
-          c_util.hex_to_rgba(colours['mantle'], 0.2),
-          c_util.hex_to_rgba(colours['mantle'], 0.2),
-          c_util.hex_to_rgba(colours['crust'], 0.0),
-        },
-      },
-    },
-    width = '100%',
-    height = '100%',
-  },
-  {
-    source = {
-      Gradient = {
-        colors = {
-          colours['base'],
-          c_util.hex_to_rgba(colours['base'], 0.5),
-          c_util.hex_to_rgba(colours['base'], 0.0),
-          c_util.hex_to_rgba(colours['base'], 0.0),
-          c_util.hex_to_rgba(colours['base'], 0.5),
-          colours['base'],
-        },
-        orientation = { Linear = { angle = 270 } },
-      },
-    },
-    width = '100%',
-    height = '100%',
-  },
-}
+config.background = background.get_wallpaper(theme)
 
 -- Reload the configuration every thirty minute
 wezterm.time.call_after(1800, function()
