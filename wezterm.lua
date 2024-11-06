@@ -7,6 +7,7 @@ local sb = require 'util.status_bar'
 local background = require 'util.wallpaper'
 local c_util = require 'util.colours'
 local colours = c_util.current_colours
+local nvim_util = require 'util.neovim'
 -- Out current theme is defined is colours.lua, such that other programs too can read colours.lua and use the colours from there
 local theme = c_util.theme
 
@@ -102,13 +103,9 @@ config.leader = { key = 'a', mods = 'CTRL', timeout_milliseconds = 1000 }
 config.keys = {
   { key = 'a', mods = 'LEADER', action = act.SendKey { key = 'a', mods = 'CTRL' } },
   { key = 'c', mods = 'LEADER', action = act.ActivateCopyMode },
-  { key = 'f', mods = 'CTRL', action = act.ToggleFullScreen },
+  { key = 'f', mods = 'LEADER', action = act.ToggleFullScreen },
   { key = '-', mods = 'LEADER', action = act.SplitVertical { domain = 'CurrentPaneDomain' } },
   { key = '$', mods = 'LEADER', action = act.SplitHorizontal { domain = 'CurrentPaneDomain' } },
-  { key = 'h', mods = 'LEADER', action = act.ActivatePaneDirection 'Left' },
-  { key = 'j', mods = 'LEADER', action = act.ActivatePaneDirection 'Down' },
-  { key = 'k', mods = 'LEADER', action = act.ActivatePaneDirection 'Up' },
-  { key = 'l', mods = 'LEADER', action = act.ActivatePaneDirection 'Right' },
   { key = 'x', mods = 'LEADER', action = act.CloseCurrentPane { confirm = true } },
   { key = 'z', mods = 'LEADER', action = act.TogglePaneZoomState },
   { key = 'n', mods = 'LEADER', action = act.SpawnTab 'CurrentPaneDomain' },
@@ -144,6 +141,10 @@ for i = 1, 9 do
     mods = 'LEADER',
     action = act.ActivateTab(i - 1),
   })
+end
+
+for _, keybind in pairs(nvim_util.nav_keys) do
+  table.insert(config.keys, keybind)
 end
 
 config.key_tables = {
