@@ -44,6 +44,7 @@ local define_component = function(window, pane, component, colour, default_colou
   local charge_percent = math.floor(battery.state_of_charge * 100)
   local battery_symbols = {
     ['Charging'] = {
+      [0] = '󰢜 ',
       [10] = '󰢜 ',
       [20] = '󰂆 ',
       [30] = '󰂇 ',
@@ -56,6 +57,7 @@ local define_component = function(window, pane, component, colour, default_colou
       [100] = '󰂅 ',
     },
     ['Discharging'] = {
+      [0] = '󰁺 ',
       [10] = '󰁺 ',
       [20] = '󰁻 ',
       [30] = '󰁼 ',
