@@ -10,6 +10,7 @@ local colours = c_util.current_colours
 local nvim_util = require 'util.neovim'
 -- Our current theme is defined is colours.lua, such that other programs too can read colours.lua and use the colours from there
 local theme = c_util.theme
+local os_triplet = wezterm.target_triple
 
 -- Set default font with fallback
 config.font = wezterm.font_with_fallback {
@@ -36,7 +37,7 @@ config.wsl_domains = {
 -- }
 
 -- Window customization
-config.window_decorations = 'RESIZE|INTEGRATED_BUTTONS'
+config.window_decorations = 'NONE'
 config.window_close_confirmation = 'NeverPrompt'
 config.max_fps = 165
 config.animation_fps = 60
@@ -84,9 +85,6 @@ config.colors = {
   },
 }
 
--- Default shell setup
-config.default_prog = { 'pwsh', '-NoLogo' }
-
 -- Enable dimming of inactive panes
 config.inactive_pane_hsb = {
   saturation = 0.5,
@@ -110,22 +108,41 @@ config.tab_bar_style = {
 config.leader = { key = 'a', mods = 'CTRL', timeout_milliseconds = 1000 }
 -- stylua: ignore
 config.keys = {
-  { key = 'a',         mods = 'LEADER',             action = act.SendKey { key = 'a', mods = 'CTRL' } },
-  { key = 'c',         mods = 'LEADER',             action = act.ActivateCopyMode },
-  { key = 'f',         mods = 'LEADER',             action = act.ToggleFullScreen },
-  { key = '-',         mods = 'LEADER',             action = act.SplitVertical { domain = 'CurrentPaneDomain' } },
-  { key = '$',         mods = 'LEADER',             action = act.SplitHorizontal { domain = 'CurrentPaneDomain' } },
-  { key = 'x',         mods = 'LEADER',             action = act.CloseCurrentPane { confirm = true } },
-  { key = 'z',         mods = 'LEADER',             action = act.TogglePaneZoomState },
-  { key = 'n',         mods = 'LEADER',             action = act.SpawnTab 'CurrentPaneDomain' },
-  { key = 'n',         mods = 'LEADER|ALT',         action = act.SpawnTab { DomainName = 'WSL:Ubuntu' } },
-  { key = '[',         mods = 'LEADER',             action = act.ActivateTabRelative(-1) },
-  { key = ']',         mods = 'LEADER',             action = act.ActivateTabRelative(1) },
-  { key = 't',         mods = 'LEADER',             action = act.ShowTabNavigator },
-  { key = 'r',         mods = 'LEADER',             action = act.ActivateKeyTable { name = 'resize_pane', one_shot = false } },
-  { key = 'm',         mods = 'LEADER',             action = act.ActivateKeyTable { name = 'move_tab', one_shot = false } },
-  { key = 'Keypad7',   mods = 'LEADER',             action = background.action.zen_mode() },
-  { key = 'Keypad8',   mods = 'LEADER',             action = background.action.remove_wallpaper() },
+  { key = 'a', mods = 'LEADER', action = act.SendKey { key = 'a', mods = 'CTRL' } },
+  { key = 'c', mods = 'LEADER', action = act.ActivateCopyMode },
+  { key = 'f', mods = 'CTRL', action = act.ToggleFullScreen },
+  { key = '-', mods = 'LEADER', action = act.SplitVertical { domain = 'CurrentPaneDomain' } },
+  { key = '$', mods = 'LEADER', action = act.SplitHorizontal { domain = 'CurrentPaneDomain' } },
+  { key = 'h', mods = 'LEADER', action = act.ActivatePaneDirection 'Left' },
+  { key = 'j', mods = 'LEADER', action = act.ActivatePaneDirection 'Down' },
+  { key = 'k', mods = 'LEADER', action = act.ActivatePaneDirection 'Up' },
+  { key = 'l', mods = 'LEADER', action = act.ActivatePaneDirection 'Right' },
+  { key = 'x', mods = 'LEADER', action = act.CloseCurrentPane { confirm = true } },
+  { key = 'z', mods = 'LEADER', action = act.TogglePaneZoomState },
+  { key = 'n', mods = 'LEADER', action = act.SpawnTab 'CurrentPaneDomain' },
+  { key = '[', mods = 'LEADER', action = act.ActivateTabRelative(-1) },
+  { key = ']', mods = 'LEADER', action = act.ActivateTabRelative(1) },
+  { key = 't', mods = 'LEADER', action = act.ShowTabNavigator },
+  { key = 'r', mods = 'LEADER', action = act.ActivateKeyTable { name = 'resize_pane', one_shot = false } },
+  {
+    key = 'e',
+    mods = 'LEADER',
+    action = act.PromptInputLine {
+      description = wezterm.format {
+        { Attribute = { Intensity = 'Bold' } },
+        { Foreground = { AnsiColor = 'Fuchsia' } },
+        { Text = 'Renaming Tab Title...:' },
+      },
+      action = wezterm.action_callback(function(window, pane, line)
+        if line then
+          window:active_tab():set_title(line)
+        end
+      end),
+    },
+  },
+  { key = 'm', mods = 'LEADER', action = act.ActivateKeyTable { name = 'move_tab', one_shot = false } },
+  { key = 'Keypad7', mods = 'LEADER', action = background.action.zen_mode() },
+  { key = 'Keypad8', mods = 'LEADER', action = background.action.remove_wallpaper() },
 }
 
 for i = 1, 9 do
@@ -140,23 +157,11 @@ for _, keybind in pairs(nvim_util.nav_keys) do
   table.insert(config.keys, keybind)
 end
 
-config.key_tables = {
-  resize_pane = {
-    { key = 'h', action = act.AdjustPaneSize { 'Left', 1 } },
-    { key = 'j', action = act.AdjustPaneSize { 'Down', 1 } },
-    { key = 'k', action = act.AdjustPaneSize { 'Up', 1 } },
-    { key = 'l', action = act.AdjustPaneSize { 'Right', 1 } },
-    { key = 'Escape', action = 'PopKeyTable' },
-    { key = 'Enter', action = 'PopKeyTable' },
-  },
-  move_tab = {
-    { key = 'h', action = act.MoveTabRelative(-1) },
-    { key = 'j', action = act.MoveTabRelative(-1) },
-    { key = 'k', action = act.MoveTabRelative(1) },
-    { key = 'l', action = act.MoveTabRelative(1) },
-    { key = 'Escape', action = 'PopKeyTable' },
-    { key = 'Enter', action = 'PopKeyTable' },
-  },
-}
-
+-- Os specific setup
+if os_triplet == 'x86_64-pc-windows-msvc' then
+  config.default_prog = { 'pwsh', '-NoLogo' }
+  table.insert(config.keys, { key = 'n', mods = 'LEADER|ALT', action = act.SpawnTab { DomainName = 'WSL:Ubuntu' } })
+else
+  config.default_prog = { 'fish' }
+end
 return config
