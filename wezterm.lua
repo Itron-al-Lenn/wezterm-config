@@ -1,10 +1,13 @@
 ---@diagnostic disable: missing-fields, assign-type-mismatch
 -- Import necessary WezTerm and external modules
+require 'util.globals'
 local wezterm = require 'wezterm' --[[@as Wezterm]]
 local config = wezterm.config_builder()
 local c_util = require 'util.colours'
 local colours = c_util.current_colours
 local os_triplet = wezterm.target_triple
+local sb = require 'util.status_bar'
+local keys = require 'util.keys'
 
 -- Set default font with fallback
 config.font = wezterm.font_with_fallback {
@@ -15,40 +18,51 @@ config.font_size = 12
 config.line_height = 1.1
 
 -- Window customization
-config.colors = { background = colours['base'] }
-config.window_decorations = 'RESIZE'
+-- config.window_background_opacity = 0.7
 config.window_close_confirmation = 'NeverPrompt'
-config.max_fps = 165
-config.animation_fps = 60
-config.cursor_blink_rate = 250
+config.max_fps = 120
+config.animation_fps = 30
 config.window_padding = {
-  top = 3,
+  top = 7,
   bottom = 0,
-  left = 4,
+  left = 7,
   right = 0,
 }
 
 -- Customize the status bar and workspace display
-config.enable_tab_bar = false
+config.enable_tab_bar = true
+config.use_fancy_tab_bar = false
+sb.update_statusbar(config, colours)
 
--- Zen mode
-config.window_background_opacity = 0.85
-local zen_mode = function()
-  return wezterm.action_callback(function(window)
-    wezterm.GLOBAL.zen_mode = not wezterm.GLOBAL.zen_mode
-    if wezterm.GLOBAL.zen_mode then
-      window:set_config_overrides { window_background_opacity = 1.0 }
-    else
-      window:set_config_overrides { window_background_opacity = 0.85 }
+config.status_update_interval = 2000
+
+config.unix_domains = {
+  {
+    name = 'arch',
+  },
+}
+
+wezterm.on('gui-startup', function(cmd)
+  local tab, pane, mux_window = wezterm.mux.spawn_window(cmd or {})
+  local window = mux_window:gui_window()
+
+  local overrides = window:get_config_overrides() or {}
+
+  if cmd and cmd.args and #cmd.args >= 2 then
+    local program_to_run = cmd.args[1]
+    local first_arg_to_program = cmd.args[2]
+
+    if string.match(program_to_run, 'fish$') and first_arg_to_program == '-c' then
+      wezterm.log_info 'Detected fish -c command, disabling tab bar.'
+      overrides.enable_tab_bar = false
     end
-    wezterm.log_info('Zen mode: ' .. tostring(wezterm.GLOBAL.zen_mode))
-  end)
-end
+  end
+
+  window:set_config_overrides(overrides)
+end)
 
 -- Keybindings
-config.keys = {
-  { key = 'Keypad7', mods = 'CTRL', action = zen_mode() },
-}
+keys(config)
 
 -- Os specific setup
 if os_triplet == 'x86_64-pc-windows-msvc' then
@@ -63,7 +77,9 @@ if os_triplet == 'x86_64-pc-windows-msvc' then
   }
 
   config.default_domain = 'WSL:Ubuntu'
+  config.window_decorations = 'INTEGRATED_BUTTONS|RESIZE'
 else
   config.default_prog = { 'fish' }
+  config.enable_wayland = true
 end
 return config

@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+wezterm start --class floating-wez -- fish -c "\"$1\""

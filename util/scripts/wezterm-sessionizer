@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+# Determine the directory to work with
+dir=$(echo -e 'projects\nuni\ndefault' | fzf \
+        --style full \
+        --scheme history \
+        --border --padding 1,2 \
+        --border-label ' Wezterm-Sessionizer ' \
+        --input-label ' Input ')
+
+[[ -z "$dir" ]] && exit 0
+
+selected_d=""
+selected_n=""
+if [[ "$dir" == "default" ]]; then
+    selected_d="$HOME"
+    selected_n="$dir"
+else
+    if [[ ! -e "$HOME/$dir" ]]; then
+        exit 1
+    fi
+
+    depth=1
+    if [[ "$dir" == "projects" ]]; then
+        depth=2
+    fi
+
+    # Fixed the command substitution
+    selected_d=$(find "$HOME/$dir" -mindepth $depth -maxdepth $depth -type d | fzf \
+        --scheme path \
+        --border-label ' Wezterm-Sessionizer ' --input-label ' Input ' --header-label ' Type ' \
+        --header "$dir" \
+        --preview 'lsd --tree --color always --icon always {}' \
+        --bind 'result:transform-list-label:echo " $FZF_MATCH_COUNT Sessions "')
+    
+    [[ -z "$selected_d" ]] && exit 0
+
+    if [[ "$dir" == "projects" ]]; then
+        selected_n=$(basename "$(dirname "$selected_d")")-$(basename "$selected_d" | tr '.' '_')
+    else
+        selected_n=$(basename "$selected_d" | tr '.' '_')
+    fi
+fi
+
+# Create the value
+value="$selected_n;$selected_d"
+
+echo "$value"
