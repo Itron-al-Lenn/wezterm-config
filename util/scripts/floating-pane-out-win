@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# Get the directory of the script
+scripts_dir=$(dirname "$(realpath "$0")")
+
+# Define the path to the named pipe and result file
+pipe="/tmp/sessionizer_pipe"
+result="/tmp/sessionizer_result"
+
+# Ensure the pipe does not already exist
+if [[ -p "$pipe" ]]; then
+  rm -f "$pipe"
+fi
+
+# Create the named pipe
+mkfifo "$pipe" || {
+  echo "Failed to create named pipe: $pipe" >&2
+  exit 1
+}
+
+# Background reader process
+{
+  read -r value <"$pipe"
+  rm -f "$pipe" # Clean up the pipe after reading
+
+  if [[ -n "$value" ]]; then
+    echo "$value" >"$result"
+  fi
+} &
+reader_pid=$!
+
+# Allow time for the reader process to start
+sleep 0.1
+
+# Run wezterm with the provided command
+wezterm.exe start --class floating-wez -- fish -c "\"$1\" > \"$pipe\""
+
+# Wait for the reader process to complete
+wait "$reader_pid"
+
+# Get the result if available
+if [[ -f "$result" ]]; then
+  value=$(<"$result")
+  rm -f "$result" # Clean up the result file
+  echo "$value"
+fi

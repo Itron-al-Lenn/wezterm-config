@@ -1,28 +1,19 @@
 ---@diagnostic disable: missing-fields
 local wezterm = require 'wezterm' --[[@as Wezterm]]
 local act = wezterm.action
+local g = wezterm.GLOBAL
 local fp = require 'util.floating_pane'
-
----Checks if inside a vim session
----@param pane Pane
----@return boolean
-local function is_outside_vim(pane)
-  local program = string.match(pane:get_title(), '%g+')
-  wezterm.log_info('Reduced: ' .. tostring(program))
-  local inside = program == 'nvim' or program == 'vim'
-  wezterm.log_info('Bool: ' .. tostring(inside))
-  return not inside
-end
+local vim = require 'util.vim'
 
 local zen_mode = function()
   return wezterm.action_callback(function(window)
-    wezterm.GLOBAL.zen_mode = not wezterm.GLOBAL.zen_mode
-    if wezterm.GLOBAL.zen_mode then
+    g.zen_mode = not g.zen_mode
+    if g.zen_mode then
       window:set_config_overrides { window_background_opacity = 1.0 }
     else
       window:set_config_overrides { window_background_opacity = 0.7 }
     end
-    wezterm.log_info('Zen mode: ' .. tostring(wezterm.GLOBAL.zen_mode))
+    wezterm.log_info('Zen mode: ' .. tostring(g.zen_mode))
   end)
 end
 
@@ -51,9 +42,12 @@ return function(config)
     { mods = 'LEADER', key = 'x', action = act.CloseCurrentPane { confirm = false } },
     { mods = 'LEADER', key = 'h', action = act.ActivateTabRelative(-1) },
     { mods = 'LEADER', key = 'l', action = act.ActivateTabRelative(1) },
-    bind_if(is_outside_vim, 'h', 'CTRL', act.ActivatePaneDirection 'Left'),
-    bind_if(is_outside_vim, 'l', 'CTRL', act.ActivatePaneDirection 'Right'),
-    bind_if(is_outside_vim, 'j', 'CTRL', act.ActivatePaneDirection 'Down'),
-    bind_if(is_outside_vim, 'k', 'CTRL', act.ActivatePaneDirection 'Up'),
+    bind_if(vim.is_outside, 'h', 'CTRL', act.ActivatePaneDirection 'Left'),
+    bind_if(vim.is_outside, 'l', 'CTRL', act.ActivatePaneDirection 'Right'),
+    bind_if(vim.is_outside, 'j', 'CTRL', act.ActivatePaneDirection 'Down'),
+    bind_if(vim.is_outside, 'k', 'CTRL', act.ActivatePaneDirection 'Up'),
   }
+  if g.is_windows then
+    table.insert(config.keys, { mods = 'LEADER|SHIFT', key = 'c', action = act.SpawnTab { DomainName = 'local' } })
+  end
 end

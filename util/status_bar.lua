@@ -40,13 +40,14 @@ M.update_statusbar = function(config, colours)
     { Text = ' ╏ ' },
   }
 
+  ---@diagnostic disable-next-line: missing-fields
   config.tab_bar_style = {
     new_tab = '',
     new_tab_hover = '',
   }
 
   wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
-    local sym = tab.is_active and ' 𜲋' or ' ·'
+    local sym = tab.is_active and ' 󱓼' or ' ·'
 
     local tab_text = wezterm.format {
       { Text = string.match(tab.active_pane.title, '%g+') },
@@ -55,7 +56,6 @@ M.update_statusbar = function(config, colours)
   end)
 
   wezterm.on('update-status', function(window, pane)
-    -- Left Status
     local workspace_name = window:active_workspace()
 
     window:set_left_status(wezterm.format {
@@ -67,9 +67,7 @@ M.update_statusbar = function(config, colours)
       { Foreground = { Color = '#504945' } },
     } .. divider)
 
-    -- Right Status
     local date_time = wezterm.strftime '%b %d %Y %H:%M '
-
     window:set_right_status(divider .. wezterm.format {
       { Foreground = { Color = highlight } },
       { Text = date_time },

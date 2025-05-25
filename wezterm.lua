@@ -4,8 +4,8 @@ require 'util.globals'
 local wezterm = require 'wezterm' --[[@as Wezterm]]
 local config = wezterm.config_builder()
 local c_util = require 'util.colours'
+local g = wezterm.GLOBAL
 local colours = c_util.current_colours
-local os_triplet = wezterm.target_triple
 local sb = require 'util.status_bar'
 local keys = require 'util.keys'
 
@@ -53,7 +53,6 @@ wezterm.on('gui-startup', function(cmd)
     local first_arg_to_program = cmd.args[2]
 
     if string.match(program_to_run, 'fish$') and first_arg_to_program == '-c' then
-      wezterm.log_info 'Detected fish -c command, disabling tab bar.'
       overrides.enable_tab_bar = false
     end
   end
@@ -65,8 +64,7 @@ end)
 keys(config)
 
 -- Os specific setup
-if os_triplet == 'x86_64-pc-windows-msvc' then
-  -- Configure WSL and ssh domains
+if g.is_windows then
   config.wsl_domains = {
     {
       name = 'WSL:Ubuntu',
@@ -77,7 +75,7 @@ if os_triplet == 'x86_64-pc-windows-msvc' then
   }
 
   config.default_domain = 'WSL:Ubuntu'
-  config.window_decorations = 'INTEGRATED_BUTTONS|RESIZE'
+  config.window_decorations = 'RESIZE'
 else
   config.default_prog = { 'fish' }
   config.enable_wayland = true
