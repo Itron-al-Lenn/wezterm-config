@@ -1,14 +1,14 @@
 local wezterm = require 'wezterm' --[[@as Wezterm]]
-local c = require 'util.colours'
+local hex_to_rgba = require('util.conversion').string.hex_to_rgba
+local colours = require('util.colours').current_colours
 
 local M = {}
 
----Converts a colour in hex format to rgba format
+---Sets the status bar config
 ---@param config Config
----@param colours table<string, string>
-M.update_statusbar = function(config, colours)
+M.update_statusbar = function(config)
   local text = colours['text']
-  local base = c.hex_to_rgba(colours['base'], 0.6)
+  local base = hex_to_rgba(colours['base'], 0.6)
   local mauve = colours['mauve']
   local surface = colours['surface0']
   local highlight = colours['maroon']
@@ -46,7 +46,7 @@ M.update_statusbar = function(config, colours)
     new_tab_hover = '',
   }
 
-  wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
+  wezterm.on('format-tab-title', function(tab)
     local sym = tab.is_active and ' 󱓼' or ' ·'
 
     local tab_text = wezterm.format {
@@ -55,7 +55,7 @@ M.update_statusbar = function(config, colours)
     return tab_text .. sym .. divider
   end)
 
-  wezterm.on('update-status', function(window, pane)
+  wezterm.on('update-status', function(window)
     local workspace_name = window:active_workspace()
 
     window:set_left_status(wezterm.format {

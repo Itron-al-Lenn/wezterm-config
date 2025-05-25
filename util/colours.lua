@@ -1,25 +1,5 @@
+local g = require 'util.globals'
 local M = {}
-
-M.theme = 'Gruvbox-Mat'
-
----Converts a string of a hex number to a string of a decimal number
----@param hex string
----@return string
-local htod = function(hex)
-  return tostring(tonumber(hex, 16))
-end
-
----Converts a colour in hex format to rgba format
----@param hex string
----@param alpha integer
----@return string
-M.hex_to_rgba = function(hex, alpha)
-  local r = hex:sub(2, 3)
-  local g = hex:sub(4, 5)
-  local b = hex:sub(6, 7)
-  local rgba = 'rgba(' .. htod(r) .. ', ' .. htod(g) .. ', ' .. htod(b) .. ', ' .. tostring(alpha) .. ')'
-  return rgba
-end
 
 -- stylua: ignore
 M['Mocha'] = {
@@ -81,6 +61,6 @@ M['Gruvbox-Mat'] = {
   ['crust']      =  '#1b1b1b',
 }
 
-M.current_colours = M[M.theme]
+M.current_colours = M[g.theme]
 
 return M

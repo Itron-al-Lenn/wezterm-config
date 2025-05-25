@@ -1,13 +1,13 @@
 ---@diagnostic disable: missing-fields, assign-type-mismatch
 -- Import necessary WezTerm and external modules
-require 'util.globals'
 local wezterm = require 'wezterm' --[[@as Wezterm]]
 local config = wezterm.config_builder()
-local c_util = require 'util.colours'
-local g = wezterm.GLOBAL
-local colours = c_util.current_colours
-local sb = require 'util.status_bar'
-local keys = require 'util.keys'
+local g = require 'util.globals'
+local sb = require 'status_bar'
+local keys = require 'keys'
+
+-- Set default theme
+g.theme = 'Gruvbox-Mat'
 
 -- Set default font with fallback
 config.font = wezterm.font_with_fallback {
@@ -18,10 +18,8 @@ config.font_size = 12
 config.line_height = 1.1
 
 -- Window customization
--- config.window_background_opacity = 0.7
 config.window_close_confirmation = 'NeverPrompt'
 config.max_fps = 120
-config.animation_fps = 30
 config.window_padding = {
   top = 7,
   bottom = 0,
@@ -30,20 +28,13 @@ config.window_padding = {
 }
 
 -- Customize the status bar and workspace display
-config.enable_tab_bar = true
 config.use_fancy_tab_bar = false
-sb.update_statusbar(config, colours)
+sb.update_statusbar(config)
 
 config.status_update_interval = 2000
 
-config.unix_domains = {
-  {
-    name = 'arch',
-  },
-}
-
 wezterm.on('gui-startup', function(cmd)
-  local tab, pane, mux_window = wezterm.mux.spawn_window(cmd or {})
+  local _, _, mux_window = wezterm.mux.spawn_window(cmd or {})
   local window = mux_window:gui_window()
 
   local overrides = window:get_config_overrides() or {}
@@ -65,19 +56,15 @@ keys(config)
 
 -- Os specific setup
 if g.is_windows then
-  config.wsl_domains = {
+  config.window_decorations = 'RESIZE'
+  config.default_domain = 'WSL:Ubuntu'
+else
+  config.unix_domains = {
     {
-      name = 'WSL:Ubuntu',
-      default_cwd = '~',
-      distribution = 'Ubuntu',
+      name = 'arch',
       default_prog = { 'fish' },
     },
   }
-
-  config.default_domain = 'WSL:Ubuntu'
-  config.window_decorations = 'RESIZE'
-else
-  config.default_prog = { 'fish' }
   config.enable_wayland = true
 end
 return config

@@ -1,4 +1,3 @@
-local wezterm = require 'wezterm' --[[@as Wezterm]]
 local M = {}
 
 ---Checks if inside a vim session
