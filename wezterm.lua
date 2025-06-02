@@ -62,9 +62,9 @@ else
   config.unix_domains = {
     {
       name = 'arch',
-      default_prog = { 'fish' },
     },
   }
+  config.default_prog = { 'fish' }
   config.enable_wayland = true
 end
 return config

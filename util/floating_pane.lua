@@ -8,28 +8,39 @@ M.floating_pane = function(cmd)
   wezterm.log_info('Open floating pan running: ' .. cmd)
   local script = g.script_dir .. 'floating-pane'
   if g.is_windows then
-    script = script .. '-win'
+    wezterm.run_child_process {
+      'wsl',
+      'bash',
+      script .. '-win',
+      cmd,
+    }
+  else
+    wezterm.run_child_process {
+      'bash',
+      script,
+      cmd,
+    }
   end
-  wezterm.run_child_process {
-    'wsl',
-    'bash',
-    script,
-    cmd,
-  }
 end
 
 M.floating_pane_out = function(cmd)
   wezterm.log_info('Open floating pan running: ' .. cmd)
   local script = g.script_dir .. 'floating-pane-out'
+  local success, stdout, stderr
   if g.is_windows then
-    script = script .. '-win'
+    success, stdout, stderr = wezterm.run_child_process {
+      'wsl',
+      'bash',
+      script .. '-win',
+      cmd,
+    }
+  else
+    success, stdout, stderr = wezterm.run_child_process {
+      'bash',
+      script,
+      cmd,
+    }
   end
-  local success, stdout, stderr = wezterm.run_child_process {
-    'wsl',
-    'bash',
-    script,
-    cmd,
-  }
   if success then
     return stdout
   else
