@@ -78,4 +78,34 @@ M.sessionizer = function()
   end)
 end
 
+M.sessionizerv2 = function()
+  return wezterm.action_callback(function(window, pane)
+    local stdout = M.floating_pane_out '$HOME/.cargo/bin/synconizer select'
+    if not stdout then
+      wezterm.log_error 'fzf: Failed to get session information'
+      return
+    end
+
+    local lines = wezterm.split_by_newlines(stdout:gsub(';', '\n'))
+    if #lines < 2 then
+      wezterm.log_error('fzf: Invalid session format in output: ' .. stdout)
+      return
+    end
+
+    local session_n = lines[1]
+    local session_d = lines[2]
+
+    wezterm.log_info('Switch Workspace: Name: ' .. session_n .. ' Dir: ' .. session_d)
+    window:perform_action(
+      act.SwitchToWorkspace {
+        name = session_n,
+        spawn = {
+          cwd = session_d,
+        },
+      },
+      pane
+    )
+  end)
+end
+
 return M

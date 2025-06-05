@@ -33,7 +33,7 @@ reader_pid=$!
 sleep 0.1
 
 # Run wezterm with the provided command
-wezterm start --class floating-wez -- fish -c "\"$1\" > \"$pipe\""
+wezterm start --class floating-wez -- bash -c "$1 > $pipe"
 
 # Wait for the reader process to complete
 wait "$reader_pid"

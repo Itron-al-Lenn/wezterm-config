@@ -26,6 +26,11 @@ config.window_padding = {
   left = 7,
   right = 0,
 }
+config.unix_domains = {
+  {
+    name = 'arch',
+  },
+}
 
 -- Customize the status bar and workspace display
 config.use_fancy_tab_bar = false
@@ -43,7 +48,7 @@ wezterm.on('gui-startup', function(cmd)
     local program_to_run = cmd.args[1]
     local first_arg_to_program = cmd.args[2]
 
-    if string.match(program_to_run, 'fish$') and first_arg_to_program == '-c' then
+    if string.match(program_to_run, 'bash$') and first_arg_to_program == '-c' then
       overrides.enable_tab_bar = false
     end
   end
@@ -59,12 +64,7 @@ if g.is_windows then
   config.window_decorations = 'RESIZE'
   config.default_domain = 'WSL:Ubuntu'
 else
-  config.unix_domains = {
-    {
-      name = 'arch',
-    },
-  }
-  config.default_prog = { 'fish' }
+  config.default_gui_startup_args = { 'connect', 'arch' }
   config.enable_wayland = true
 end
 return config

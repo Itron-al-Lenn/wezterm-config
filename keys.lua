@@ -35,6 +35,7 @@ return function(config)
   config.keys = {
     { key = 'Keypad7', mods = 'LEADER', action = zen_mode() },
     { mods = 'LEADER', key = 'f', action = fp.sessionizer() },
+    { mods = 'LEADER', key = 'g', action = fp.sessionizerv2() },
     { mods = 'LEADER', key = ',', action = act.ShowDebugOverlay },
     { mods = 'LEADER', key = '-', action = act.SplitVertical },
     { mods = 'LEADER', key = '$', action = act.SplitHorizontal },
